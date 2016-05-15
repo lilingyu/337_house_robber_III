@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include <stdio.h>
 using namespace std;
 
 
@@ -21,112 +22,83 @@ struct TreeNode {
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-class Solution {
-public:
-    int rob(TreeNode* root) {
-        if(NULL==root)
-            return 0;
 
-        vector<TreeNode*> vec;
+ class Solution{
 
-        vec.push_back(root);
-        int cur=0;
-        int last=1;
-        int dept = 0;
-        //int rst[2];
-        //rst[0] = rst[1] = 0;
-        vector<int> data, ds, ns;
+ private:
 
-
-        while(cur < vec.size()){
-            last = vec.size();
-            int sum=0;
-            while(cur < last){
-                //sum += vec[cur]->val;
-                //rst[dept%2] += vec[cur]->val;
-                sum += vec[cur]->val;
-                cout<<vec[cur]->val<<'\t';
-                if(NULL != vec[cur]->left){
-                    vec.push_back(vec[cur]->left);
-                }
-                if(NULL != vec[cur]->right){
-                    vec.push_back(vec[cur]->right);
-                }
-                cur++;
-            }
-            cout<<endl;
-            dept++;
-            data.push_back(sum);
-
+     vector<int> robSub(TreeNode* root){
+        if(NULL == root){
+            return vector<int>(2,0);
         }
 
+        vector<int> left = robSub(root->left);
+        vector<int> right = robSub(root->right);
 
-        ds.push_back(data[0]);
-        ns.push_back(0);
+        printf("root:\t%d\n", root->val);
+        printf("left:\t%d\t%d\n", left[0], left[1]);
+        printf("right:\t%d\t%d\n\n", right[0], right[1]);
 
-        for(int i=1; i<data.size(); i++){
-                ds.push_back(ns[i-1]+data[i]);
-                ns.push_back(ns[i-1]>ds[i-1]?ns[i-1]:ds[i-1]);
+        vector<int> res(2,0);
 
-        }
-        /*
-        while(data.size()>0){
-            cout<<data.back()<<endl;
-            data.pop_back();
-        }*/
-        //cout<<"dept0: "<<rst[0]<<endl;
-        //cout<<"dept1: "<<rst[1]<<endl;
-        return ds.back()>ns.back()?ds.back():ns.back();
+        res[0] = max(left[0], left[1]) + max(right[0], right[1]);
+        res[1] = root->val + left[0] + right[0];
+
+        return res;
+     }
 
 
 
+ public:
+    int rob(TreeNode* root){
+        vector<int> result = robSub(root);
+
+        return max(result[0], result[1]);
     }
-};
 
 
 
+ };
 
 
-int main()
-{
-    Solution solt;
+ int main()
+ {
+     Solution solt;
 #if 0
-    TreeNode* root = new TreeNode(1);
-    root->left = new TreeNode(2);
-    root->right = new TreeNode(3);
-    root->left->left = new TreeNode(4);
-    root->left->right = new TreeNode(5);
-    //root->right->left = new TreeNode(6);
-    root->right->right = new TreeNode(7);
+     /*
+case 0:
+    4
+    /\
+   1 NULL
+   /\
+  2 NULL
+ /
+3
+
+     */
+     TreeNode* root = new TreeNode(4);
+     root->left = new TreeNode(1);
+     root->left->left = new TreeNode(2);
+     root->left->left->left = new TreeNode(3);
 #endif // 0
 
-#if 0
-    TreeNode* root = new TreeNode(3);
-    root->left = new TreeNode(2);
-    root->right = new TreeNode(3);
-    root->left->right = new TreeNode(3);
-    root->right->right = new TreeNode(1);
-
-#endif // 1
-
-#if 0
-    TreeNode* root = new TreeNode(3);
-    root->left = new TreeNode(4);
-    root->right = new TreeNode(5);
-    root->left->left = new TreeNode(1);
-    root->left->right = new TreeNode(3);
-    root->right->right = new TreeNode(1);
-
-#endif // 1
-
 #if 1
-    TreeNode* root = new TreeNode(4);
-    root->left = new TreeNode(1);
-    root->left->left = new TreeNode(2);
-    root->left->left->left = new TreeNode(3);
-#endif // 1
-    cout<<solt.rob(root);
 
-    //FIXME: need delete memory alloct
-    return 0;
-}
+/*
+case 1:
+  2
+  /\
+ 1 3
+  \
+   4
+*/
+    TreeNode* root = new TreeNode(2);
+    root->left = new TreeNode(1);
+    root->right = new TreeNode(3);
+    root->left->left = new TreeNode(4);
+#endif // 1
+
+     cout<<solt.rob(root);
+
+     return 0;
+ }
